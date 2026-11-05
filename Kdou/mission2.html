@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission 2 — Indicateurs KDou</title>
+    <link rel="stylesheet" href="assets\css\style.css">
+</head>
+<body>
+    <header class="banner">
+        <img src="assets\images\Kdou.png" alt="Bannière du site" class="banner-image">
+    </header>
+    <header>
+        <nav>
+            <a href="accueil.html">Accueil</a>
+            <a href="mission1.html">Mission 1</a>
+            <a href="mission2.html">Mission 2</a>
+            <a href="mission3.html">Mission 3</a>
+        </nav>
+    </header>
+    <main>
+        <h1 class="titre">Mission 2 — Analyse des données</h1>
+
+        <section>
+            <h2>Présentation</h2>
+            <p>Nous utilisons des requêtes SQL dans Access pour répondre à plusieurs questions sur KDou. Les résultats présentés ci-dessous seront à compléter avec les valeurs obtenues dans la base de données.</p>
+        </section>
+
+        <article>
+            <h2>Indicateur 2 — Fournisseurs de l'Union européenne</h2>
+            <p><strong>Question :</strong> Quel est le chiffre d'affaires total généré avec les fournisseurs de l'Union européenne ?</p>
+            <h3>Intérêt</h3>
+            <p>Cette requête permet à KDou de connaître le montant des ventes liées aux fournisseurs européens. L'entreprise pourra utiliser cette information pour réfléchir à l'origine de ses produits.</p>
+            <h3>Requête SQL Access</h3>
+<p class="SQL">SELECT<br>
+Sum(D.[Quantité] * P.CoutAchat * Ca.CoefMarge) AS CA_UE<br>
+FROM<br>
+(<br>
+(<br>
+(<br>
+DetailCommande AS D<br>
+INNER JOIN Produit AS P<br>
+ON D.[Réf produit] = P.RefProd<br>
+)<br>
+INNER JOIN Categorie AS Ca<br>
+ON P.CodeCateg = Ca.CodeCateg<br>
+)<br>
+INNER JOIN Fournisseur AS F<br>
+ON P.NoFour = F.NoFour<br>
+)<br>
+INNER JOIN Pays AS Pa<br>
+ON F.NoPays = Pa.NoPays<br>
+WHERE<br>
+Pa.UE = True;</p>
+            <h3>Explication</h3>
+            <p>On relie les produits aux catégories, aux fournisseurs et aux pays. On garde les fournisseurs de l'Union européenne avec <strong>WHERE</strong>. La fonction <strong>Sum</strong> additionne les montants calculés à partir des quantités, des coûts d'achat et des coefficients de marge.</p>
+            <p class="resultat"><strong>Résultat :</strong> montant total en euros à renseigner après exécution dans Access (calcul sans les remises).</p>
+            <img src="assets/images/indicateur2.png" alt="Résultat de la requête indicateur2">
+        </article>
+
+        <article>
+            <h2>Indicateur 3 — Desserts et boissons</h2>
+            <p><strong>Question :</strong> Quel est le chiffre d'affaires réalisé en 2021 pour les desserts et les boissons ?</p>
+            <h3>Intérêt</h3>
+            <p>Cette requête permet de comparer les montants des ventes de desserts et de boissons sur une année. On peut modifier les dates pour étudier une autre année.</p>
+            <h3>Requête SQL Access</h3>
+<p class="SQL">SELECT<br>
+Ca.NomCateg,<br>
+Sum(D.[Quantité] * P.CoutAchat * Ca.CoefMarge) AS CA_Annuel<br>
+FROM<br>
+(<br>
+(<br>
+Commande AS C<br>
+INNER JOIN DetailCommande AS D<br>
+ON C.[N° commande] = D.[N° commande]<br>
+)<br>
+INNER JOIN Produit AS P<br>
+ON D.[Réf produit] = P.RefProd<br>
+)<br>
+INNER JOIN Categorie AS Ca<br>
+ON P.CodeCateg = Ca.CodeCateg<br>
+WHERE<br>
+Ca.NomCateg IN ("Desserts", "Boissons")<br>
+AND C.DateCde &gt;= #01/01/2021#<br>
+AND C.DateCde &lt; #01/01/2022#<br>
+GROUP BY<br>
+Ca.NomCateg;</p>
+            <h3>Explication</h3>
+            <p>On garde les commandes passées en 2021 dans les catégories desserts et boissons. <strong>GROUP BY</strong> sépare les deux catégories, puis <strong>Sum</strong> calcule le montant de leurs ventes.</p>
+            <p class="resultat"><strong>Résultat :</strong> chiffre d'affaires de chaque catégorie à renseigner après exécution dans Access (calcul sans les remises).</p>
+            <img src="assets/images/indicateur3.png" alt="Résultat de la requête indicateur3">
+        </article>
+
+        <article>
+            <h2>Indicateur 4 — Produits carnés non commandés</h2>
+            <p><strong>Question :</strong> Combien de produits de la catégorie viandes n'ont jamais été commandés ?</p>
+            <h3>Intérêt</h3>
+            <p>Cette requête permet de repérer les produits de la catégorie viandes qui n'apparaissent dans aucune commande. KDou peut ainsi mieux connaître son catalogue.</p>
+            <h3>Requête SQL Access</h3>
+<p class="SQL">SELECT<br>
+Count(P.RefProd) AS NbProduitsNonCommandes<br>
+FROM<br>
+(<br>
+Produit AS P<br>
+INNER JOIN Categorie AS Ca<br>
+ON P.CodeCateg = Ca.CodeCateg<br>
+)<br>
+LEFT JOIN DetailCommande AS D<br>
+ON P.RefProd = D.[Réf produit]<br>
+WHERE<br>
+Ca.NomCateg = &quot;Viandes&quot;<br>
+AND D.[Réf produit] IS NULL;</p>
+            <h3>Explication</h3>
+            <p>On sélectionne les produits de la catégorie viandes. Le <strong>LEFT JOIN</strong> garde les produits sans commande, <strong>IS NULL</strong> permet de les retrouver et <strong>Count</strong> les compte.</p>
+            <p class="resultat"><strong>Résultat :</strong> nombre de produits à renseigner après exécution dans Access.</p>
+            <img src="assets/images/indicateur4.png" alt="Résultat de la requête indicateur4">
+        </article>
+
+        <article>
+            <h2>Indicateur 5 — Clients partenaires</h2>
+            <p><strong>Question :</strong> Combien de clients partenaires possède chaque client pilote ?</p>
+            <h3>Intérêt</h3>
+            <p>Cette requête permet de connaître le nombre de partenaires rattachés à chaque client pilote. Elle aide à voir la taille des différents réseaux de clients.</p>
+            <h3>Requête SQL Access</h3>
+<p class="SQL">SELECT<br>
+Cl.CodeCliPart AS Pilote,<br>
+Count(*) AS NbPartenaires<br>
+FROM<br>
+Clientele AS Cl<br>
+WHERE<br>
+Cl.CodeCliPart IS NOT NULL<br>
+GROUP BY<br>
+Cl.CodeCliPart<br>
+ORDER BY<br>
+Count(*) DESC;</p>
+            <h3>Explication</h3>
+            <p>On utilise <strong>CodeCliPart</strong> pour identifier le pilote de chaque partenaire. <strong>GROUP BY</strong> regroupe les partenaires par pilote, <strong>Count</strong> les compte et <strong>DESC</strong> trie les résultats du plus grand au plus petit.</p>
+            <p class="resultat"><strong>Résultat :</strong> code de chaque pilote et nombre de partenaires à renseigner après exécution dans Access.</p>
+            <img src="assets/images/indicateur5.png" alt="Résultat de la requête indicateur5">
+        </article>
+    </main>
+    <footer>
+        <p>SAÉ S1.04 — Rapport collectif KDou</p>
+    </footer>
+</body>
+</html>

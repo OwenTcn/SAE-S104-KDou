@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission 1 — Étude de la base KDou</title>
+    <link rel="stylesheet" href="assets\css\style.css">
+</head>
+<body>
+    <header class="banner">
+        <img src="assets\images\Kdou.png" alt="Bannière du site" class="banner-image">
+    </header>
+    <header>
+        <nav>
+            <a href="accueil.html">Accueil</a>
+            <a href="mission1.html">Mission 1</a>
+            <a href="mission2.html">Mission 2</a>
+            <a href="mission3.html">Mission 3</a>
+        </nav>
+    </header>
+    <main>
+        <h1 class="titre">Mission 1 — Étude de la base de données</h1>
+
+        <section>
+            <h2>Présentation de la base</h2>
+            <p>La base KDou est fournie dans un fichier Access. Elle contient des informations sur les clients, les commandes, les produits, les fournisseurs, les catégories et les pays. Nous devons comprendre le rôle de chaque table avant d'écrire des requêtes SQL.</p>
+        </section>
+
+        <section>
+            <h2>Les principales tables</h2>
+            <table>
+                <tr><th>Table</th><th>Informations enregistrées</th></tr>
+                <tr><td>Clientele</td><td>Les clients de KDou et leurs coordonnées.</td></tr>
+                <tr><td>Commande</td><td>Les commandes des clients et leurs dates.</td></tr>
+                <tr><td>DetailCommande</td><td>Les produits et les quantités de chaque commande.</td></tr>
+                <tr><td>Produit</td><td>Les produits, leur coût d'achat et leur fournisseur.</td></tr>
+                <tr><td>Categorie</td><td>Les catégories de produits et les coefficients de marge.</td></tr>
+                <tr><td>Fournisseur</td><td>Les fournisseurs de KDou.</td></tr>
+                <tr><td>Pays</td><td>Les pays et leur appartenance à l'Union européenne.</td></tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Les relations entre les tables</h2>
+            <p>Un client peut passer plusieurs commandes. Une commande peut contenir plusieurs produits. Chaque produit appartient à une catégorie et est proposé par un fournisseur.</p>
+            <p>Par exemple, le champ <strong>CodeCli</strong> relie Clientele à Commande. Le champ <strong>Réf produit</strong> de DetailCommande permet de retrouver un produit grâce à <strong>RefProd</strong> dans Produit.</p>
+            <p>Ces relations permettent d'utiliser des <strong>INNER JOIN</strong> ou des <strong>LEFT JOIN</strong> pour réunir les informations de plusieurs tables.</p>
+        </section>
+
+        <section>
+            <h2>Méthode de travail</h2>
+            <p>Nous observons d'abord les tables et leurs champs dans Access. Ensuite, nous choisissons les tables nécessaires à chaque question, puis nous écrivons la requête SQL. Enfin, nous exécutons la requête pour vérifier son résultat.</p>
+        </section>
+    </main>
+    <footer>
+        <p>SAÉ S1.04 — Rapport collectif KDou</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission 3 — Requête personnelle KDou</title>
+    <link rel="stylesheet" href="assets\css\style.css">
+</head>
+<body>
+    <header class="banner">
+        <img src="assets\images\Kdou.png" alt="Bannière du site" class="banner-image">
+    </header>
+    <header>
+        <nav>
+            <a href="accueil.html">Accueil</a>
+            <a href="mission1.html">Mission 1</a>
+            <a href="mission2.html">Mission 2</a>
+            <a href="mission3.html">Mission 3</a>
+        </nav>
+    </header>
+    <main>
+        <h1 class="titre">Mission 3 — Requête personnelle</h1>
+
+        <section>
+            <h2>Présentation</h2>
+            <p>Chaque membre de l'équipe doit proposer une requête supplémentaire qui peut être utile à KDou. Voici une proposition sur les produits achetés auprès de fournisseurs français.</p>
+        </section>
+
+        <article>
+            <h2>Les cinq produits de fournisseurs français les moins chers à l'achat</h2>
+            <p><strong>Question :</strong> Quels sont les cinq produits les moins chers achetés auprès de fournisseurs français ?</p>
+            <h3>Objectif</h3>
+            <p>Trouver les produits vendus par des fournisseurs situés en France et dont le coût d'achat est le plus faible.</p>
+            <h3>Intérêt</h3>
+            <p>Cette requête permet à KDou de repérer des produits achetés auprès de fournisseurs français à des prix intéressants. L'entreprise pourrait développer son offre de produits français tout en maîtrisant ses coûts. Cela pourrait aussi limiter certaines distances de transport.</p>
+            <h3>Requête SQL Access</h3>
+<p class="SQL">SELECT TOP 5<br>
+P.NomProd,<br>
+F.Societe AS Fournisseur,<br>
+P.CoutAchat<br>
+FROM<br>
+(<br>
+Produit AS P<br>
+INNER JOIN Fournisseur AS F<br>
+ON P.NoFour = F.NoFour<br>
+)<br>
+INNER JOIN Pays AS Pa<br>
+ON F.NoPays = Pa.NoPays<br>
+WHERE<br>
+Pa.PaysFR = &quot;France&quot;<br>
+ORDER BY<br>
+P.CoutAchat ASC,<br>
+P.NomProd ASC;</p>
+            <h3>Explication</h3>
+            <p>On relie les tables Produit, Fournisseur et Pays. Avec <strong>WHERE</strong>, on garde les fournisseurs situés en France. <strong>ORDER BY</strong> trie les produits du moins cher au plus cher, puis <strong>TOP 5</strong> affiche les cinq premiers.</p>
+            <p class="resultat"><strong>Résultat :</strong> noms des cinq produits, fournisseurs et coûts d'achat à renseigner après exécution dans Access.</p>
+            <img src="assets/images/requete_perso.png" alt="Résultat de la requête requete perso">
+        </article>
+
+        <article>
+            <h2>Eros — Top 10 des clients par chiffre d’affaires estimé</h2>
+            <p><strong>Question :</strong> Quels sont les dix principaux clients de KDou selon leur chiffre d’affaires estimé, et quelle est la marge associée ?</p>
+            <h3>Objectif</h3>
+            <p>Classer les clients suivant leur chiffre d’affaires et afficher leur ville, leur nombre de commandes et leur marge.</p>
+            <h3>Intérêt</h3>
+            <p>Ce classement permet d’identifier les clients qui contribuent le plus au chiffre d’affaires et de comparer les marges associées.</p>
+            <h3>Requête SQL</h3>
+<p class="SQL">SELECT TOP 10<br>
+CL.Societe,<br>
+CL.Ville,<br>
+COUNT(DISTINCT CM.[N° commande]) AS NbCommandes,<br>
+ROUND(SUM(D.[Quantité] * P.CoutAchat * C.CoefMarge * (1 - D.[Remise (%)])), 2) AS ChiffreAffaires,<br>
+ROUND(SUM(D.[Quantité] * P.CoutAchat * C.CoefMarge * (1 - D.[Remise (%)]))<br>
+- SUM(D.[Quantité] * P.CoutAchat), 2) AS Marge<br>
+FROM (((Clientele AS CL<br>
+INNER JOIN Commande AS CM ON CL.CodeCli = CM.CodeCli)<br>
+INNER JOIN DetailCommande AS D ON CM.[N° commande] = D.[N° commande])<br>
+INNER JOIN Produit AS P ON D.[Réf produit] = P.RefProd)<br>
+INNER JOIN Categorie AS C ON P.CodeCateg = C.CodeCateg<br>
+GROUP BY CL.Societe, CL.Ville<br>
+ORDER BY SUM(D.[Quantité] * P.CoutAchat * C.CoefMarge * (1 - D.[Remise (%)])) DESC;</p>
+            <h3>Explication</h3>
+            <p>On relie les clients, commandes, détails, produits et catégories, puis on regroupe les montants par client et on trie les résultats.</p>
+            <p class="resultat"><strong>Résultat :</strong> Top 10 des clients avec leur ville, leur nombre de commandes, leur chiffre d’affaires estimé et leur marge.</p>
+            <img src="assets/images/perso_eros.png" alt="Résultat de la requête personnelle de Eros">
+        </article>
+
+
+        <article>
+            <h2>Raphaele — Pays fournisseurs hors Union européenne</h2>
+            <p><strong>Question :</strong> Quels pays hors Union européenne fournissent des produits à KDou, et combien de références viennent de chacun ?</p>
+            <h3>Objectif</h3>
+            <p>Lister les pays fournisseurs hors UE et compter le nombre de références par pays.</p>
+            <h3>Intérêt</h3>
+            <p>Ce classement aide KDou à voir quels pays concentrent ses approvisionnements hors UE et à mieux orienter ses échanges avec les fournisseurs.</p>
+            <h3>Requête SQL</h3>
+<p class="SQL">SELECT P.PaysFR AS Pays, COUNT(*) AS NbProduits<br>
+FROM (Produit AS Pr<br>
+INNER JOIN Fournisseur AS F ON Pr.NoFour = F.NoFour)<br>
+INNER JOIN Pays AS P ON F.NoPays = P.NoPays<br>
+WHERE P.UE = &quot;Hors&quot;<br>
+GROUP BY P.PaysFR<br>
+ORDER BY 2 DESC, 1;</p>
+            <h3>Explication</h3>
+            <p>On relie Produit, Fournisseur et Pays, on garde les pays hors UE, puis COUNT et GROUP BY comptent les produits par pays.</p>
+            <p class="resultat"><strong>Résultat :</strong> 62 références sur 109 proviennent de pays hors UE (56,9 %). Le Royaume-Uni arrive en tête avec 14 références, suivi des États-Unis avec 13.</p>
+            <img src="assets/images/perso_raphaele.png" alt="Résultat de la requête personnelle de Raphaele">
+        </article>
+
+
+        <article>
+            <h2>Rayane — Part des produits en carton ou en verre</h2>
+            <p><strong>Question :</strong> Quelle part des références du catalogue mentionne un conditionnement en carton ou en verre ?</p>
+            <h3>Objectif</h3>
+            <p>Compter les produits concernés et calculer leur pourcentage parmi toutes les références.</p>
+            <h3>Intérêt</h3>
+            <p>Cet indicateur offre un premier aperçu des emballages mentionnés dans le catalogue pour orienter une étude plus précise des matériaux utilisés.</p>
+            <h3>Requête SQL</h3>
+<p class="SQL">SELECT<br>
+DCount(&quot;*&quot;,&quot;Produit&quot;,<br>
+&quot;QteParUnit Like &#x27;*carton*&#x27; OR QteParUnit Like &#x27;*verre*&#x27;&quot;)<br>
+AS NbProduits_Carton_Verre,<br>
+DCount(&quot;*&quot;,&quot;Produit&quot;) AS NbTotalProduits,<br>
+Round(100 * DCount(&quot;*&quot;,&quot;Produit&quot;,<br>
+&quot;QteParUnit Like &#x27;*carton*&#x27; OR QteParUnit Like &#x27;*verre*&#x27;&quot;)<br>
+/ DCount(&quot;*&quot;,&quot;Produit&quot;), 2) AS Pourcentage;</p>
+            <h3>Explication</h3>
+            <p>DCount compte les produits correspondants et le nombre total de références ; Round arrondit le pourcentage calculé.</p>
+            <p class="resultat"><strong>Résultat :</strong> 26 produits sur 109, soit 23,85 % des références. Cette mesure repose sur les descriptions et non sur l’impact réel des emballages.</p>
+            <img src="assets/images/perso_rayane.png" alt="Résultat de la requête personnelle de Rayane">
+        </article>
+    </main>
+    <footer>
+        <p>SAÉ S1.04 — Rapport collectif KDou</p>
+    </footer>
+</body>
+</html>
